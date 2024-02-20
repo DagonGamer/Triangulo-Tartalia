@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Triángulo Tartalia</title>
+
+    <style>
+
+        div.Carga {
+            position: fixed;
+            z-index: -100;
+            background: gray;
+            width: 100%;
+            height: 100vh;
+            top: 0px;
+            left: 0px;
+        }
+
+        div.Carga p {
+            font-size: 5rem;
+            color: white;
+            text-align: center;
+        }
+
+        div.Carga div {
+            width: 10rem;
+            height: 10rem;
+            border-radius: 10rem;
+            border: 1rem solid white;
+            border-left: 1rem solid gray;
+            margin: auto;
+            animation: Girar 1s linear infinite;
+        }
+
+        @keyframes Girar {
+
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+            
+        }
+
+        :root {
+            --Diametro: 10rem;
+            --Angulo: 0.8660254; /* cos 30º */
+        }
+
+        body {
+            min-width: 100%;
+            height: 100vh;
+            
+            margin: 0px;
+            background: gray;
+            width: 100%;
+        }
+
+        div.Triangulo {
+            padding: calc( var(--Diametro) / 4 );
+            width: fit-content;
+        }
+
+        div.row div p {
+            --LengthFiltered: max(6, var(--Length));
+
+            width: calc( var(--Diametro) - var(--Diametro) / 5 );
+            padding: 0px calc( var(--Diametro) / 10 );
+            height: auto;
+            font-family: monospace;
+            text-align: center;
+            margin: 0px;
+            font-size: calc( 10 / (var(--LengthFiltered) / 1.25) * 1rem );
+        }
+
+        div.row div {
+            --Length: 1;
+            width: var(--Diametro);
+            height: var(--Diametro);
+            clip-path: polygon(5% 25%, 5% 75%, 50% 100%, 95% 75%, 95% 25%, 50% 0%);
+            background: black;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        div.row {
+            width: fit-content;
+            margin: calc( var(--Angulo) * var(--Diametro) - var(--Diametro) ) auto;
+        }
+
+        div.grid {
+            width: 100%;
+            height: 100vh;
+            background: gray;
+
+            position: fixed;
+            top: 0px;
+            left: 0px;
+
+            display: grid;
+            grid-template-columns: calc( 100% - 10rem ) 10rem;
+            grid-template-rows: 1fr;
+        }
+
+        div.grid div.Imagen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        div.grid div.Imagen img.Imagen {
+            width: auto;
+            height: 100vh;
+            object-fit: contain;
+        }
+
+        div.grid form {
+            width: fit-content;
+            height: fit-content;
+            margin: 1rem auto;
+        }
+
+        div.grid input {
+            width: 8rem;
+            margin: 0px;
+        }
+
+        @media (orientation: portrait) {
+
+            div.grid {
+                width: 100%;
+                height: 100vh;
+
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: calc( 100vh - 2.5rem ) 2.5rem;
+            }
+
+            div.grid div.Imagen img.Imagen {
+                width: 100%;
+                height: auto;
+            }
+
+            div.grid form {
+                margin: 0px auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="Carga">
+
+        <p>Cargando...</p>
+        <div></div>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="Imagen">
+            
+            <img class="Imagen" src="" alt="">
+
+        </div>
+
+        <form>
+
+            <input type="number" name="" id="">
+
+        </form>
+
+    </div>
+    
+    <div class="Triangulo">
+
+        
+
+    </div>
+
+    <script src="dom-to-image-master\dist\dom-to-image.min.js"></script>
+    <script src="wheelzoom-master/wheelzoom.js"></script>
+
+    <script>
+
+        let Niveles = [["1"], ["1", "1"]];
+
+        let Sumar = (num1 = "1", num2 = "1") => {
+
+            let arr = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+            let num3 = "";
+
+            let Longitud = Math.max(num1.length, num2.length) + 1;
+
+            for (let i = num1.length; i < Longitud; i++) num1 = "0" + num1;
+            for (let i = num2.length; i < Longitud; i++) num2 = "0" + num2;
+
+            let cant = 0;
+            for (let i = Longitud - 1; i >= 0; i--) {
+
+                num3 = arr[ ((Number(num1[i]) + Number(num2[i]) + cant) % 10) ] + num3;
+
+                if (Number(num1[i]) + Number(num2[i]) > 9) cant = 1;
+                else cant = 0;
+
+            }
+
+            if (num3[0] == "0") num3 = num3.slice(1);
+
+            return num3;
+
+        }
+
+        let CargarNiveles = (nivel = 10) => {
+            
+            for (let i = Niveles.length; i < nivel; i++) {
+
+                let newNivel = [];
+                let newImpar = [];
+
+                for (let o = 0; o < Niveles[i-1].length + 1; o++) {
+
+                    let a = Niveles[i - 1][o - 1] || "0";
+                    let b = Niveles[i - 1][o] || "0";
+
+                    newNivel[o] = Sumar(a,b);
+
+                }
+
+                Niveles[i] = newNivel;
+                
+            }
+
+        }
+
+        let RenderizarHexagonos = (nivel = 10) => {
+
+            document.querySelector("body").style.width = "max-content";
+            document.querySelector("div.Triangulo").hidden = false;
+
+            Array.from(
+                document.querySelectorAll("div.row")
+            ).forEach( el => el.remove());
+
+            if (Niveles.length < nivel) CargarNiveles(nivel);
+
+            for (i = 0; i < nivel; i++) {
+
+                let divRow = document.createElement("div");
+                divRow.className = "row";
+
+                for (let o = 0; o < Niveles[i].length; o++) {
+                    
+                    let HexDiv = document.createElement("div");
+                    let info = Niveles[i][o].toString();
+                    
+                    HexDiv.style = `--Length: ${info.length};${ Number(Niveles[i][o].slice(-1)) % 2 == 0 ? " background: white; color: black;" : "" }`;
+                    HexDiv.innerHTML = `<p>${info}</p>`;
+
+                    divRow.appendChild(HexDiv);
+
+                }
+
+                document.querySelector("div.Triangulo").appendChild(divRow);
+
+            }
+
+            domtoimage.toPng(document.querySelector("div.Triangulo"))
+                .then( url => {
+
+                    let img = document.querySelector("img.Imagen");
+                    img.src = url;
+
+                    document.querySelector("body").style.width = "100%";
+                    document.querySelector("div.Triangulo").hidden = true;
+
+                } );
+
+        }
+
+        RenderizarHexagonos();
+
+        document.querySelector("form").onsubmit = (e) => {
+
+            e.preventDefault();
+
+            let Num = Number(document.querySelector("input").value);
+
+            document.querySelector("div.Carga").style.zIndex = 100;
+
+            RenderizarHexagonos(Num);
+
+            document.querySelector("div.Carga").style.zIndex = -100;
+        
+        }
+
+        wheelzoom(document.querySelector("img"));
+
+    </script>
+    
+</body>
+</html>
